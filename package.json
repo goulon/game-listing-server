@@ -1,0 +1,11 @@
+{
+  "name": "game-listing-server",
+  "version": "1.0.0",
+  "description": "Dynamic game listing framework for a streaming appliction in Unity",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aurelien Goulon",
+  "license": "ISC"
+}
