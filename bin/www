@@ -8,6 +8,7 @@ require('dotenv').config();
 var app = require('../app');
 var debug = require('debug')('game-listing-server:server');
 var http = require('http');
+var db = require('../db/conn');
 
 /**
  * Get port from environment and store in Express.
@@ -23,10 +24,23 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
+ * Perform a database connection when the server starts 
+ */
+
+db.connectToServer(function (err) {
+  if (err) {
+    console.error(err);
+    process.exit();
+  }
+})
+
+/**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, () => {
+  console.log(`Server is running on port: ${port}`);
+});
 server.on('error', onError);
 server.on('listening', onListening);
 

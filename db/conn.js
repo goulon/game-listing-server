@@ -12,7 +12,7 @@ module.exports = {
       }
 
       dbConnection = db.db('unityStreamingDB');
-      console.log('Successfully connected to MongoDB.');
+      console.log('Successfully connected to MongoDB');
 
       return callback();
     });
