@@ -11,6 +11,7 @@
   "author": "Aurelien Goulon",
   "license": "ISC",
   "dependencies": {
+    "ajv": "^8.10.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^16.0.0",
