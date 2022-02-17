@@ -4,5 +4,28 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color: #00b7ff;
+}
+
+container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+textarea,
+button {
+  width: 100%;
+  padding: 10px;
+}
+
+.textinput {
+  width: 100%;
+  padding: 10px;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
 }
