@@ -105,16 +105,17 @@ function validateGameListing(gameListingObject) {
 }
 
 function adImagedURLToGameListing(gameListingInput) {
-  gameListing = JSON.parse(JSON.stringify(gameListingInput));
-  if (gameListing.imageUrl) {
-    gameListing.images.url = [
-      {
-        "id": "1",
-        "url": gameListing.imageUrl,
-        "type": 1
-      }
-    ];
+  const gameListing = JSON.parse(JSON.stringify(gameListingInput));
+  const imageUrl = gameListing.imageUrl;
+  if (imageUrl) {
+    gameListing['images'] = [];
+    gameListing.images.push({
+      "id": "1",
+      "url": imageUrl,
+      "type": 1
+    });
   }
+  delete gameListing.imageUrl;
   return gameListing;
 }
 
