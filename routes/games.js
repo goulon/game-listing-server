@@ -53,7 +53,7 @@ router.get('/:id', function (req, res, next) {
  */
 router.post('/', function (req, res, next) {
   const gameListingObject = req.body;
-  const error = validateGameListing(gameListingObject)
+  const error = validateGameListingObject(gameListingObject)
 
   if (error) return res.status(400).send(error);
 
@@ -116,7 +116,7 @@ function validateGameListingId(objectId) {
 /**
  * Validate game listing properties and required fields
  */
-function validateGameListing(gameListingObject) {
+function validateGameListingObject(gameListingObject) {
   const schema = {
     type: 'object',
     properties: {
@@ -138,6 +138,7 @@ function validateGameListing(gameListingObject) {
   }
 
   const validate = ajv.compile(schema);
+  validate(gameListingObject);
 
   let errorMessage = null;
   if (validate.errors) {
