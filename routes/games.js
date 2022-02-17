@@ -57,7 +57,7 @@ router.post('/', function (req, res, next) {
   if (error) return res.status(400).send(`No game listing created:\n${error}`);
 
   const dbConnect = db.getDb();
-  gameListing = adImagedURLToGameListing(gameListingObject);
+  gameListing = addImagedURLToGameListing(gameListingObject);
 
   dbConnect
     .collection('gameListings')
@@ -162,7 +162,7 @@ function transformBooleanValues(gameListingInput) {
 /**
  * Insert user imageUrl into the imageObject array and remove input field
  */
-function adImagedURLToGameListing(gameListingInput) {
+function addImagedURLToGameListing(gameListingInput) {
   const gameListing = JSON.parse(JSON.stringify(gameListingInput));
   const imageUrl = gameListing.imageUrl;
   if (imageUrl) {
