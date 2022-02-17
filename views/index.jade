@@ -13,7 +13,6 @@ block content
           option(value='vod') VOD
 
       br
-      br
       label(for='isDownloadable') Want to make it available for download?
       div
         input(type='radio', id='isDownloadable', name='isDownloadable', value='true', checked=true)
@@ -22,29 +21,24 @@ block content
         label No
       
       br
-      br
       label(for='title') Title
       div
         input(class='textinput', type='text', id='title', name='title', required, minLength='8', maxLength='80')
       
-      br
       br
       label(for='subtitle') Subtitle
       div
         input(class='textinput', type='text', id='subtitle', name='subtitle', required, minLength='10', maxLength='120')
       
       br
-      br
       label(for='description') Description
       div
         textarea(type='text', id='description', name='description', required, minLength='10', maxLength='400')
       
       br
-      br
       label(for='imageUrl') Image URL
       div
         input(class='textinput', type='text', id='imageUrl', name='imageUrl', minLength='0', maxLength='400')
 
-      br
       br
       button(type='submit') Create Game Listing
