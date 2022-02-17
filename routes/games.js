@@ -27,24 +27,25 @@ router.get('/', async function (req, res, next) {
  */
 router.get('/:id', async function (req, res, next) {
   const reqObjectId = req.params.id;
+  const error = validateGameListingId(reqObjectId);
 
-  if (validateGameListingId(reqObjectId)) {
-    var o_id = new mongo.ObjectId(reqObjectId);
-    const dbConnect = db.getDb();
+  if (error) return res.status(400).send('Object id must be a string of 12 bytes or a string of 24 hex.');
 
-    dbConnect
-      .collection('gameListings')
-      .findOne({ '_id': o_id })
-      .then(result => {
-        res.json(result);
-      }).catch(err => {
-        console.error(err);
-        res.status(404).send('Game listing not found');
-      });
-  } else {
-    res.status(400).send('Object id must be a string of 12 bytes or a string of 24 hex.');
-  }
+  var o_id = new mongo.ObjectId(reqObjectId);
+  const dbConnect = db.getDb();
 
+  dbConnect
+    .collection('gameListings')
+    .findOne({ '_id': o_id })
+    .then(result => {
+      if (!result) {
+        throw new Error('not found');
+      }
+      res.json(result);
+    }).catch(err => {
+      console.error(err);
+      res.status(404).send('Game listing not found');
+    });
 });
 
 /**
@@ -52,28 +53,25 @@ router.get('/:id', async function (req, res, next) {
  */
 router.post('/', async function (req, res, next) {
   const gameListingObject = req.body;
-  const { inputIsValid, validationError } = validateGameListing(gameListingObject)
+  const error = validateGameListing(gameListingObject)
 
-  if (inputIsValid) {
-    const dbConnect = db.getDb();
-    gameListing = adImagedURLToGameListing(gameListingObject);
+  if (error) return res.status(400).send(error);
 
-    await dbConnect
-      .collection('gameListings')
-      .insertOne(gameListing, function (err, result) {
-        if (err) {
-          res.status(400).send("Error inserting game listing!");
-        } else {
-          console.log(`Added a new game listing with id ${result.insertedId}`);
-          let message = `Game listing created and available /games/${result.insertedId}`
-          console.log(message)
-          res.status(201).send(message);
-        }
-      });
-  } else {
-    console.error(validationError);
-    res.status(400).send(validationError);
-  }
+  const dbConnect = db.getDb();
+  gameListing = adImagedURLToGameListing(gameListingObject);
+
+  await dbConnect
+    .collection('gameListings')
+    .insertOne(gameListing, function (err, result) {
+      if (err) {
+        res.status(400).send("Error inserting game listing!");
+      } else {
+        console.log(`Added a new game listing with id ${result.insertedId}`);
+        let message = `Game listing created and available /games/${result.insertedId}`
+        console.log(message)
+        res.status(201).send(message);
+      }
+    });
 })
 
 /**
@@ -81,36 +79,38 @@ router.post('/', async function (req, res, next) {
  */
 router.delete('/:id', (req, res, next) => {
   const reqObjectId = req.params.id;
+  const error = validateGameListingId(reqObjectId);
 
-  if (validateGameListingId(reqObjectId)) {
-    var o_id = new mongo.ObjectId(reqObjectId);
-    const dbConnect = db.getDb();
+  if (error) return res.status(400).send(error);
 
+  var o_id = new mongo.ObjectId(reqObjectId);
+  const dbConnect = db.getDb();
 
-    dbConnect
-      .collection('gameListings')
-      .deleteOne({ '_id': o_id })
-      .then(result => {
-        console.log(result)
-        if (result.deletedCount) {
-          res.status(202).send(`Deleted 1 game listing with ID ${reqObjectId}`);
-        } else {
-          res.status(400).send(`Game listing with ID ${reqObjectId} does not exist`);
-        }
-      }).catch(err => {
-        console.error(err);
-        res.status(400).send('Error deleting game listing with ID ${reqObjectId}');
-      });
-  } else {
-    res.status(400).send('Object id must be a string of 12 bytes or a string of 24 hex.');
-  }
+  dbConnect
+    .collection('gameListings')
+    .deleteOne({ '_id': o_id })
+    .then(result => {
+      console.log(result)
+      if (result.deletedCount) {
+        res.status(202).send(`Deleted 1 game listing with ID ${reqObjectId}`);
+      } else {
+        res.status(400).send(`Game listing with ID ${reqObjectId} does not exist`);
+      }
+    }).catch(err => {
+      console.error(err);
+      res.status(400).send('Error deleting game listing with ID ${reqObjectId}');
+    });
 });
 
 /**
  * Validate object ID format
  */
 function validateGameListingId(objectId) {
-  return objectId.toString().length === 24;
+  let errorMessage = null;
+  if (objectId.toString().length !== 24) {
+    errorMessage = 'Object id must be a string of 12 bytes or a string of 24 hex.'
+  };
+  return errorMessage;
 }
 
 /**
@@ -144,7 +144,7 @@ function validateGameListing(gameListingObject) {
   if (validate.errors) {
     errorMessage = validate.errors[0].message;
   }
-  return { inputIsValid: valid, validationError: errorMessage };
+  return errorMessage;
 }
 
 /**
