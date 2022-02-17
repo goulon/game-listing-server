@@ -43,8 +43,7 @@ router.get('/:id', function (req, res, next) {
       }
       res.json(result);
     }).catch(err => {
-      console.error(err);
-      res.status(404).send('Game listing not found');
+      res.status(404).send(`Game listing not found:\n${err}`);
     });
 });
 
@@ -55,7 +54,7 @@ router.post('/', function (req, res, next) {
   const gameListingObject = req.body;
   const error = validateGameListingObject(gameListingObject)
 
-  if (error) return res.status(400).send(error);
+  if (error) return res.status(400).send(`No game listing created:\n${error}`);
 
   const dbConnect = db.getDb();
   gameListing = adImagedURLToGameListing(gameListingObject);
@@ -64,13 +63,10 @@ router.post('/', function (req, res, next) {
     .collection('gameListings')
     .insertOne(gameListing)
     .then(result => {
-      console.log(`Added a new game listing with id ${result.insertedId}`);
       let message = `Game listing created and available /games/${result.insertedId}`
-      console.log(message)
       res.status(201).send(message);
     }).catch(err => {
-      console.error(err);
-      res.status(400).send("Error inserting game listing!");
+      res.status(400).send(`Error inserting game listing:\n${err}`);
     });
 })
 
@@ -90,15 +86,13 @@ router.delete('/:id', function (req, res, next) {
     .collection('gameListings')
     .deleteOne({ '_id': o_id })
     .then(result => {
-      console.log(result)
       if (result.deletedCount) {
         res.status(202).send(`Deleted 1 game listing with ID ${reqObjectId}`);
       } else {
         res.status(400).send(`Game listing with ID ${reqObjectId} does not exist`);
       }
     }).catch(err => {
-      console.error(err);
-      res.status(400).send('Error deleting game listing with ID ${reqObjectId}');
+      res.status(400).send('Error deleting game listing with ID ${reqObjectId}:\n${err}');
     });
 });
 
