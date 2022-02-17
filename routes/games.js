@@ -138,7 +138,6 @@ function validateGameListing(gameListingObject) {
   }
 
   const validate = ajv.compile(schema);
-  const valid = validate(gameListingObject);
 
   let errorMessage = null;
   if (validate.errors) {
