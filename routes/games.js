@@ -77,7 +77,7 @@ router.post('/', function (req, res, next) {
 /**
  * Route to delete a new game listing
  */
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', function (req, res, next) {
   const reqObjectId = req.params.id;
   const error = validateGameListingId(reqObjectId);
 
