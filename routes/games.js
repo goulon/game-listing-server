@@ -1,7 +1,8 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const Ajv = require('ajv');
 const ajv = new Ajv();
+const mongo = require('mongodb');
 
 const db = require('../db/conn');
 
@@ -21,6 +22,27 @@ router.get('/', async function (req, res, next) {
     })
 });
 
+router.get('/:id', async function (req, res, next) {
+  const dbConnect = db.getDb();
+  const reqObjectId = req.params.id;
+
+  if (validateGameListingId(reqObjectId)) {
+    var o_id = new mongo.ObjectId(reqObjectId);
+    dbConnect
+      .collection('gameListings')
+      .findOne({ '_id': o_id })
+      .then(result => {
+        res.json(result);
+      }).catch(err => {
+        console.error(err);
+        res.status(400).send('Error fetching game listing.');
+      });
+  } else {
+    res.status(400).send('Object id must be a string of 12 bytes or a string of 24 hex.');
+  }
+
+});
+
 router.post('/', async function (req, res, next) {
   const gameListingObject = req.body;
   const { inputIsValid, validationError } = validateGameListing(gameListingObject)
@@ -30,13 +52,15 @@ router.post('/', async function (req, res, next) {
     gameListing = adImagedURLToGameListing(gameListingObject);
 
     await dbConnect
-      .collections('gameListings')
+      .collection('gameListings')
       .insertOne(gameListing, function (err, result) {
         if (err) {
           res.status(400).send("Error inserting matches!");
         } else {
-          console.log(`Added a new match with id ${result.insertedId}`);
-          res.status(204).send();
+          console.log(`Added a new game listing with id ${result.insertedId}`);
+          let message = `Game listing created and available /games/${result.insertedId}`
+          console.log(message)
+          res.status(201).send(message);
         }
       });
   } else {
@@ -44,6 +68,10 @@ router.post('/', async function (req, res, next) {
     res.status(400).send(validationError);
   }
 })
+
+function validateGameListingId(objectId) {
+  return objectId.toString().length === 24;
+}
 
 function validateGameListing(gameListingObject) {
   const schema = {
@@ -69,7 +97,11 @@ function validateGameListing(gameListingObject) {
   const validate = ajv.compile(schema);
   const valid = validate(gameListingObject);
 
-  return { inputIsValid: valid, validationError: validate.errors[0].message };
+  let errorMessage = null;
+  if (validate.errors) {
+    errorMessage = validate.errors[0].message;
+  }
+  return { inputIsValid: valid, validationError: errorMessage };
 }
 
 function adImagedURLToGameListing(gameListingInput) {
