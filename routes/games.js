@@ -22,6 +22,9 @@ router.get('/', async function (req, res, next) {
     })
 });
 
+/**
+ * Route to read a new game listing
+ */
 router.get('/:id', async function (req, res, next) {
   const reqObjectId = req.params.id;
 
@@ -44,6 +47,9 @@ router.get('/:id', async function (req, res, next) {
 
 });
 
+/**
+ * Route to create a new game listing
+ */
 router.post('/', async function (req, res, next) {
   const gameListingObject = req.body;
   const { inputIsValid, validationError } = validateGameListing(gameListingObject)
@@ -70,6 +76,9 @@ router.post('/', async function (req, res, next) {
   }
 })
 
+/**
+ * Route to delete a new game listing
+ */
 router.delete('/:id', (req, res, next) => {
   const reqObjectId = req.params.id;
 
@@ -97,10 +106,16 @@ router.delete('/:id', (req, res, next) => {
   }
 });
 
+/**
+ * Validate object ID format
+ */
 function validateGameListingId(objectId) {
   return objectId.toString().length === 24;
 }
 
+/**
+ * Validate game listing properties and required fields
+ */
 function validateGameListing(gameListingObject) {
   const schema = {
     type: 'object',
@@ -132,6 +147,9 @@ function validateGameListing(gameListingObject) {
   return { inputIsValid: valid, validationError: errorMessage };
 }
 
+/**
+ * Insert user imageUrl into the imageObject array and remove input field
+ */
 function adImagedURLToGameListing(gameListingInput) {
   const gameListing = JSON.parse(JSON.stringify(gameListingInput));
   const imageUrl = gameListing.imageUrl;
