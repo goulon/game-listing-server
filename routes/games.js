@@ -51,9 +51,10 @@ router.get('/:id', function (req, res, next) {
  * Route to create a new game listing
  */
 router.post('/', function (req, res, next) {
-  const gameListingObject = req.body;
-  const error = validateGameListingObject(gameListingObject)
+  let gameListingObject = req.body;
+  gameListingObject = transformBooleanValues(gameListingObject);
 
+  const error = validateGameListingObject(gameListingObject)
   if (error) return res.status(400).send(`No game listing created:\n${error}`);
 
   const dbConnect = db.getDb();
