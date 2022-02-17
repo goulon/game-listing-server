@@ -7,7 +7,7 @@ const mongo = require('mongodb');
 const db = require('../db/conn');
 
 /* GET game listing. */
-router.get('/', async function (req, res, next) {
+router.get('/', function (req, res, next) {
   const dbConnect = db.getDb();
 
   dbConnect
@@ -25,7 +25,7 @@ router.get('/', async function (req, res, next) {
 /**
  * Route to read a new game listing
  */
-router.get('/:id', async function (req, res, next) {
+router.get('/:id', function (req, res, next) {
   const reqObjectId = req.params.id;
   const error = validateGameListingId(reqObjectId);
 
@@ -51,7 +51,7 @@ router.get('/:id', async function (req, res, next) {
 /**
  * Route to create a new game listing
  */
-router.post('/', async function (req, res, next) {
+router.post('/', function (req, res, next) {
   const gameListingObject = req.body;
   const error = validateGameListing(gameListingObject)
 
@@ -60,17 +60,17 @@ router.post('/', async function (req, res, next) {
   const dbConnect = db.getDb();
   gameListing = adImagedURLToGameListing(gameListingObject);
 
-  await dbConnect
+  dbConnect
     .collection('gameListings')
-    .insertOne(gameListing, function (err, result) {
-      if (err) {
-        res.status(400).send("Error inserting game listing!");
-      } else {
-        console.log(`Added a new game listing with id ${result.insertedId}`);
-        let message = `Game listing created and available /games/${result.insertedId}`
-        console.log(message)
-        res.status(201).send(message);
-      }
+    .insertOne(gameListing)
+    .then(result => {
+      console.log(`Added a new game listing with id ${result.insertedId}`);
+      let message = `Game listing created and available /games/${result.insertedId}`
+      console.log(message)
+      res.status(201).send(message);
+    }).catch(err => {
+      console.error(err);
+      res.status(400).send("Error inserting game listing!");
     });
 })
 
