@@ -23,11 +23,12 @@ router.get('/', async function (req, res, next) {
 });
 
 router.get('/:id', async function (req, res, next) {
-  const dbConnect = db.getDb();
   const reqObjectId = req.params.id;
 
   if (validateGameListingId(reqObjectId)) {
     var o_id = new mongo.ObjectId(reqObjectId);
+    const dbConnect = db.getDb();
+
     dbConnect
       .collection('gameListings')
       .findOne({ '_id': o_id })
