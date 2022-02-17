@@ -70,6 +70,33 @@ router.post('/', async function (req, res, next) {
   }
 })
 
+router.delete('/:id', (req, res, next) => {
+  const reqObjectId = req.params.id;
+
+  if (validateGameListingId(reqObjectId)) {
+    var o_id = new mongo.ObjectId(reqObjectId);
+    const dbConnect = db.getDb();
+
+
+    dbConnect
+      .collection('gameListings')
+      .deleteOne({ '_id': o_id })
+      .then(result => {
+        console.log(result)
+        if (result.deletedCount) {
+          res.status(202).send(`Deleted 1 game listing with ID ${reqObjectId}`);
+        } else {
+          res.status(400).send(`Game listing with ID ${reqObjectId} does not exist`);
+        }
+      }).catch(err => {
+        console.error(err);
+        res.status(400).send('Error deleting game listing with ID ${reqObjectId}');
+      });
+  } else {
+    res.status(400).send('Object id must be a string of 12 bytes or a string of 24 hex.');
+  }
+});
+
 function validateGameListingId(objectId) {
   return objectId.toString().length === 24;
 }
