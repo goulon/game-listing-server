@@ -6,6 +6,27 @@ const mongo = require('mongodb');
 
 const db = require('../db/conn');
 
+const schema = {
+  type: 'object',
+  properties: {
+    category: { type: 'string' },
+    title: { type: 'string' },
+    subtitle: { type: 'string' },
+    description: { type: 'string' },
+    imageUrl: { type: 'string' },
+    type: { type: 'number' },
+    tags: { type: 'array' },
+    author: { type: 'string' },
+    replayBundleUrlJson: { type: 'string' },
+    duration: { type: 'number' },
+    isDownloadable: { type: 'boolean' },
+    isStreamable: { type: 'boolean' },
+    version: { type: 'string' },
+  },
+  required: ['category', 'title', 'subtitle', 'description'],
+  additionalProperties: false,
+}
+
 /* GET game listing. */
 router.get('/', function (req, res, next) {
   const dbConnect = db.getDb();
@@ -54,8 +75,8 @@ router.post('/', function (req, res, next) {
   let gameListingObject = req.body;
   gameListingObject = transformBooleanValues(gameListingObject);
 
-  const error = validateGameListingObject(gameListingObject)
-  if (error) return res.status(400).send(`No game listing created:\n${error}`);
+  const error = validateGameListingObject(schema, gameListingObject);
+  if (error) return res.status(400).send(`No game listing created: ${error}\nPlease follow this schema:\n${JSON.stringify(schema, null, 4)}`);
 
   const dbConnect = db.getDb();
   gameListing = addImagedURLToGameListing(gameListingObject);
@@ -111,35 +132,17 @@ function validateGameListingId(objectId) {
 /**
  * Validate game listing properties and required fields
  */
-function validateGameListingObject(gameListingObject) {
-  const schema = {
-    type: 'object',
-    properties: {
-      category: { type: 'string' },
-      title: { type: 'string' },
-      subtitle: { type: 'string' },
-      description: { type: 'string' },
-      imageUrl: { type: 'string' },
-      type: { type: 'number' },
-      tags: { type: 'array' },
-      author: { type: 'string' },
-      replayBundleUrlJson: { type: 'string' },
-      duration: { type: 'number' },
-      isDownloadable: { type: 'boolean' },
-      isStreamable: { type: 'boolean' },
-      version: { type: 'string' },
-    },
-    required: ['category', 'title', 'subtitle', 'description'],
-  }
+function validateGameListingObject(gameListingSchema, gameListingObject) {
+  const validate = ajv.compile(gameListingSchema);
+  valid = validate(gameListingObject);
 
-  const validate = ajv.compile(schema);
-  validate(gameListingObject);
+  let = validationErrors = null;
 
-  let errorMessage = null;
-  if (validate.errors) {
-    errorMessage = validate.errors[0].message;
+  if (!valid) {
+    validationErrors = validate.errors;
+    return validate.errors[0].message;
   }
-  return errorMessage;
+  return validationErrors;
 }
 
 function normalizeToBooleanValue(booleanString) {
@@ -152,7 +155,6 @@ function transformBooleanValues(gameListingInput) {
 
   const booleanProperties = ['isDownloadable', 'isStreamable'];
   for (const key of booleanProperties) {
-    console.log(gameListing[key])
     if (typeof gameListing[key] === 'string') {
       gameListing[key] = normalizeToBooleanValue(gameListing[key]);
     }
