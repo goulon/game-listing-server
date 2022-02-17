@@ -141,6 +141,24 @@ function validateGameListingObject(gameListingObject) {
   return errorMessage;
 }
 
+function normalizeToBooleanValue(booleanString) {
+  if (booleanString === 'true') return true;
+  if (booleanString === 'false') return false;
+}
+
+function transformBooleanValues(gameListingInput) {
+  let gameListing = JSON.parse(JSON.stringify(gameListingInput));
+
+  const booleanProperties = ['isDownloadable', 'isStreamable'];
+  for (const key of booleanProperties) {
+    console.log(gameListing[key])
+    if (typeof gameListing[key] === 'string') {
+      gameListing[key] = normalizeToBooleanValue(gameListing[key]);
+    }
+  }
+  return gameListing;
+}
+
 /**
  * Insert user imageUrl into the imageObject array and remove input field
  */
