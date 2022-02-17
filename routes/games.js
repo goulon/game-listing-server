@@ -36,7 +36,7 @@ router.get('/:id', async function (req, res, next) {
         res.json(result);
       }).catch(err => {
         console.error(err);
-        res.status(400).send('Error fetching game listing.');
+        res.status(404).send('Game listing not found');
       });
   } else {
     res.status(400).send('Object id must be a string of 12 bytes or a string of 24 hex.');
@@ -56,7 +56,7 @@ router.post('/', async function (req, res, next) {
       .collection('gameListings')
       .insertOne(gameListing, function (err, result) {
         if (err) {
-          res.status(400).send("Error inserting matches!");
+          res.status(400).send("Error inserting game listing!");
         } else {
           console.log(`Added a new game listing with id ${result.insertedId}`);
           let message = `Game listing created and available /games/${result.insertedId}`
