@@ -28,7 +28,9 @@ const schema = {
   additionalProperties: false,
 }
 
-/* GET game listing. */
+/**
+ * Route to read all game listings
+ */
 router.get('/', function (req, res, next) {
   const dbConnect = db.getDb();
 
@@ -45,7 +47,7 @@ router.get('/', function (req, res, next) {
 });
 
 /**
- * Route to read a new game listing
+ * Route to read a game listing from its id
  */
 router.get('/:id', function (req, res, next) {
   const reqObjectId = req.params.id;
@@ -94,7 +96,7 @@ router.post('/', function (req, res, next) {
 })
 
 /**
- * Route to delete a new game listing
+ * Route to delete a new game listing from its id
  */
 router.delete('/:id', function (req, res, next) {
   const reqObjectId = req.params.id;
@@ -120,7 +122,7 @@ router.delete('/:id', function (req, res, next) {
 });
 
 /**
- * Validate object ID format
+ * Validate object ID format according to MongoDB guidelines
  */
 function validateGameListingId(objectId) {
   let errorMessage = null;
@@ -146,11 +148,17 @@ function validateGameListingObject(gameListingSchema, gameListingObject) {
   return validationErrors;
 }
 
+/**
+ * Normalize a boolean string into a boolean type
+ */
 function normalizeToBooleanValue(booleanString) {
   if (booleanString === 'true') return true;
   if (booleanString === 'false') return false;
 }
 
+/**
+ * Transform every boolean field from the input from string into boolean type
+ */
 function transformBooleanValues(gameListingInput) {
   let gameListing = JSON.parse(JSON.stringify(gameListingInput));
 
