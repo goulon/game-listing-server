@@ -21,6 +21,7 @@ const schema = {
     duration: { type: 'number' },
     isDownloadable: { type: 'boolean' },
     isStreamable: { type: 'boolean' },
+    isPremium: { type: 'boolean' },
     version: { type: 'string' },
   },
   required: ['category', 'title', 'subtitle', 'description'],
@@ -153,7 +154,7 @@ function normalizeToBooleanValue(booleanString) {
 function transformBooleanValues(gameListingInput) {
   let gameListing = JSON.parse(JSON.stringify(gameListingInput));
 
-  const booleanProperties = ['isDownloadable', 'isStreamable'];
+  const booleanProperties = ['isDownloadable', 'isStreamable', 'isPremium'];
   for (const key of booleanProperties) {
     if (typeof gameListing[key] === 'string') {
       gameListing[key] = normalizeToBooleanValue(gameListing[key]);

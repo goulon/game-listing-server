@@ -19,6 +19,14 @@ block content
         label Yes
         input(type='radio', id='isDownloadable', name='isDownloadable' value='false')
         label No
+
+      br
+      label(for='isPremium') Is this a premium game listing?
+      div
+        input(type='radio', id='isPremium', name='isPremium', value='true')
+        label Yes
+        input(type='radio', id='isPremium', name='isPremium' value='false', checked=true)
+        label No
       
       br
       label(for='title') Title
