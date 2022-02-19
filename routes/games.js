@@ -53,7 +53,7 @@ router.get('/:id', function (req, res, next) {
   const reqObjectId = req.params.id;
   const error = validateGameListingId(reqObjectId);
 
-  if (error) return res.status(400).send('Object id must be a string of 12 bytes or a string of 24 hex.');
+  if (error) return res.status(400).send(`Error fetching game listing: ${error}`);
 
   var o_id = new mongo.ObjectId(reqObjectId);
   const dbConnect = db.getDb();
@@ -102,7 +102,7 @@ router.delete('/:id', function (req, res, next) {
   const reqObjectId = req.params.id;
   const error = validateGameListingId(reqObjectId);
 
-  if (error) return res.status(400).send(error);
+  if (error) return res.status(400).send(`Error deleting game listing: ${error}`);
 
   var o_id = new mongo.ObjectId(reqObjectId);
   const dbConnect = db.getDb();
