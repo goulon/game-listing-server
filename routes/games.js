@@ -139,11 +139,10 @@ function validateGameListingObject(gameListingSchema, gameListingObject) {
   const validate = ajv.compile(gameListingSchema);
   valid = validate(gameListingObject);
 
-  let = validationErrors = null;
+  let validationErrors = null;
 
   if (!valid) {
-    validationErrors = validate.errors;
-    return validate.errors[0].message;
+    validationErrors = validate.errors[0].message;
   }
   return validationErrors;
 }
